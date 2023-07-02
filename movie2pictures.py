@@ -1,6 +1,9 @@
+# -*- coding: utf-8 -*-
 import sys
 import cv2
 import os
+import easygui
+import math
 
 # 初期設定
 try:
@@ -45,8 +48,8 @@ def movie2pictures(movie_path=defalut_movie_path,output_folder=default_output_fo
             selcted_y_list.append(y)
     #end func
 
-    window_str = "着目する矩形領域を左上、右下の順に左クリックで指定してください.終わったらキーボードでqを押してください。"
-    cv2.namedWindow(window_str)
+    window_str = "Select upper left corner and lower right corner of target area and press 'q' to confirm"
+    cv2.namedWindow(window_str, cv2.WINDOW_NORMAL)
     cv2.setMouseCallback(window_str, _mouse_callback)
 
     while True:
@@ -83,7 +86,7 @@ def movie2pictures(movie_path=defalut_movie_path,output_folder=default_output_fo
             # 画像を保存
             if not os.path.isdir(output_folder):
                 os.makedirs(output_folder)
-            image_path = os.path.join(output_folder,f'frame_{frame_counter}.jpg')
+            image_path = os.path.join(output_folder,os.path.splitext(os.path.basename(movie_path))[0],f'frame_{frame_counter}.jpg')
             cv2.imwrite(image_path, frame)
             print(f'Saved image: {image_path}')
             
@@ -94,9 +97,22 @@ def movie2pictures(movie_path=defalut_movie_path,output_folder=default_output_fo
 
     # キャプチャーを解放
     cap.release()
+    
+def floatbox(message,title,default,lowerbound=0.0,upperbound=1000000):
+    try:
+        value = float(easygui.enterbox(message,title))
+    except:
+        value = default
+    finally:
+        pass
+    #endtry
+    value = max(min(value, upperbound), lowerbound)
+    return value
+
+
 
 if __name__ =='__main__':
-    movie_path = input("動画へのフルパスを指定してください。\n->")
-    output_folder = input("画像を出力するフォルダへのフルパスを指定してください。\n->")
-    threshold = float(input("0~1の範囲でフレーム間差分を見るときの閾値を設定してください。\n 例：1%を想定しているときは0.01を入力\n->"))
+    movie_path = easygui.fileopenbox(title="入力する動画ファイルを選択してください。")
+    output_folder = easygui.diropenbox(title="画像を出力するフォルダを選択してください。")
+    threshold = floatbox("0~1の範囲でフレーム間差分を見るときの閾値を設定してください。", "Number Input",default=0.01,lowerbound=0.0001,upperbound=0.99)
     movie2pictures(movie_path,output_folder,threshold)
