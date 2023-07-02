@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import PyPDF2
 
 def split_pdf(input_path, output_path_prefix,split_pages=[],split_num = 2):

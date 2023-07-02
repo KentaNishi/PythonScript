@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import cv2
 
 def mouse_callback(event, x, y, flags, param):

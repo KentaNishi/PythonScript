@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
-import sys
 import cv2
 import os
 import easygui
-import math
 
 # 初期設定
 try:
