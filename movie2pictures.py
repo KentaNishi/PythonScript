@@ -14,7 +14,7 @@ threshold = 0.008  #
 
 
 
-def movie2pictures(movie_path=defalut_movie_path,output_folder=default_output_folder,threshold = 0.008):
+def movie2pictures(movie_path=defalut_movie_path,output_base_folder=default_output_folder,threshold = 0.008):
     """
     mp4ファイルから、フレーム間の差分をみて画像に分割する関数
 
@@ -25,18 +25,26 @@ def movie2pictures(movie_path=defalut_movie_path,output_folder=default_output_fo
     Output
         None （ファイル生成のみで特に関数としての出力はない）
     """
+
+    #出力フォルダを設定
+    output_folder = os.path.join(output_base_folder,os.path.splitext(os.path.basename(movie_path))[0])
+    # フォルダが存在していない場合は作成
+    if not os.path.isdir(output_folder):
+        os.makedirs(output_folder)
+    
     # 動画のキャプチャーを作成
     cap = cv2.VideoCapture(movie_path)
 
     # 最初のフレームを取得
     ret, prev_frame = cap.read()
     h,w,c=prev_frame.shape
+    # フレーム番号のカウンター
+    frame_counter = 0
+    image_path = os.path.join(output_folder,f'frame_{frame_counter}.jpg')
+    cv2.imwrite(image_path, prev_frame)
+    frame_counter += 1
 
     # 着目領域の選択
-    # h_min = h//4
-    # h_max = h//3*2
-    # w_min = w//4
-    # w_max = w//4*3
     selcted_x_list = []
     selcted_y_list = []
     def _mouse_callback(event, x, y, flags, param):
@@ -62,10 +70,7 @@ def movie2pictures(movie_path=defalut_movie_path,output_folder=default_output_fo
     w_max = max(selcted_x_list)
     max_diff = (h_max-h_min)*(w_max-w_min)*3*255
 
-    # フレーム番号のカウンター
-    frame_counter = 0
-
-
+    
 
     while True:
         # フレームを取得
@@ -82,9 +87,9 @@ def movie2pictures(movie_path=defalut_movie_path,output_folder=default_output_fo
         diff_sum = diff.sum()
         if diff_sum/max_diff > threshold:
             # 画像を保存
-            if not os.path.isdir(output_folder):
-                os.makedirs(output_folder)
-            image_path = os.path.join(output_folder,os.path.splitext(os.path.basename(movie_path))[0],f'frame_{frame_counter}.jpg')
+            
+            
+            image_path = os.path.join(output_folder,f'frame_{frame_counter}.jpg')
             cv2.imwrite(image_path, frame)
             print(f'Saved image: {image_path}')
             
