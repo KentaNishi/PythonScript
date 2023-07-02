@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import PyPDF2
+import easygui
 
 def split_pdf(input_path, output_path_prefix,split_pages=[],split_num = 2):
 
@@ -29,11 +30,11 @@ def split_pdf(input_path, output_path_prefix,split_pages=[],split_num = 2):
 
 if __name__ == '__main__':
 
-    input_file_path = input("分割したいPDFファイルのフルパスを与えてください\n->")
-    output_file_path_prefix = input("分割したPDFファイルを保存する名前を_枝番.pdf抜きで指定してください\n->")
+    input_file_path = easygui.fileopenbox(title="分割したいPDFファイルを選んでください")
+    output_file_path_prefix = easygui.enterbox("分割したPDFファイルを保存する名前を_枝番.pdf抜きで指定してください(フルパス)","保存ファイル名を指定")
     try:
-        split_pages = [element for element in map(int,input("分割したいページ番号をカンマ区切りで入力してください\n->").split(","))]
+        split_pages = [element for element in map(int,easygui.enterbox("分割したいページ番号をカンマ区切りで入力してください","分割するページの指定").split(","))]
         split_pdf(input_file_path, output_file_path_prefix,split_pages)
     except:
         split_num = int(input("PDFを分割したい個数を入力してください\n->"))
-        split_pdf(input_file_path, output_file_path_prefix)
+        split_pdf(input_file_path, output_file_path_prefix,split_num=split_num)
