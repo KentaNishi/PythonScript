@@ -3,3 +3,5 @@ opencv-python
 PyPDF2
 easygui
 cx_Freeze
+pynput
+pyautogui

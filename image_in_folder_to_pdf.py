@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from PIL import Image
+from PIL import Image, ImageDraw
 from pathlib import Path
 import re
 import easygui
@@ -24,6 +24,15 @@ def concatenate_images(image_list,multiples):
     max_width = max(image.width for image in image_list)
     max_height = max(image.height for image in image_list)
     print(max_width,max_height)
+
+    #結合する画像の境界線を引くための始点と終点を設定
+
+    # 縦線
+    start_points = [(i*max_width,0) for i in range(1,multiples[0])]
+    end_points = [(i*max_width,multiples[1]*max_height) for i in range(1,multiples[0])]
+    # 横線を追加
+    start_points += [(0,i*max_height) for i in range(1,multiples[1])]
+    end_points += [(multiples[0]*max_width,i*max_height) for i in range(1,multiples[1])]
     # 画像をキャンバス上に結合する
     for i,image in enumerate(image_list):
         x_offset = i % multiples[0]
@@ -32,10 +41,22 @@ def concatenate_images(image_list,multiples):
             canvas = Image.new('RGB', (multiples[0]*max_width,multiples[1]*max_height))
         canvas.paste(image, (x_offset*max_width,y_offset*max_height))
         if (x_offset+1 == multiples[0] and y_offset+1 == multiples[1]):
+            draw_lines(canvas,start_points,end_points)
             output_image_list.append(canvas)
     if not (x_offset+1 == multiples[0] and y_offset+1 == multiples[1]):
         output_image_list.append(canvas)
     return output_image_list
+
+def draw_lines(image, start_points, end_points):
+    # 直線を描画
+    color = (0, 0, 0)  # 黒の直線
+    thickness = 2
+    draw = ImageDraw.Draw(image)
+    for start_point, end_point in zip(start_points, end_points):
+        draw.line([start_point, end_point], fill=color, width=thickness)
+    #endfor
+
+    return None
 
 def convert_images2pdf(image_folder:str,multiples=(2,2)):
 
