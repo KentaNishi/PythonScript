@@ -78,7 +78,7 @@ def scroll_and_save_images(save_folder,folder_name,threshold = 0.99):
         # スクロール
         pyautogui.press("pagedown")
         #pyautogui.typewrite(' ')
-        time.sleep(1)
+        time.sleep(0.5)
         # スクショを取得
         image = ImageGrab.grab(bbox=(w_min,h_min,w_max,h_max))
 

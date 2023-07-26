@@ -2,6 +2,7 @@
 import cv2
 import os
 import easygui
+import numpy as np
 
 # 初期設定
 try:
@@ -68,7 +69,7 @@ def movie2pictures(movie_path=defalut_movie_path,output_base_folder=default_outp
     h_max = max(selcted_y_list)
     w_min = min(selcted_x_list)
     w_max = max(selcted_x_list)
-    max_diff = (h_max-h_min)*(w_max-w_min)*3*255
+    max_diff = (h_max-h_min)*(w_max-w_min)*3
 
     
 
@@ -82,10 +83,9 @@ def movie2pictures(movie_path=defalut_movie_path,output_base_folder=default_outp
 
         # フレーム差分の計算
         diff    = cv2.absdiff(prev_frame[h_min:h_max,w_min:w_max,:], frame[h_min:h_max,w_min:w_max,:]) 
-
-        # 差分が閾値を超えるかどうかを確認
-        diff_sum = diff.sum()
-        if diff_sum/max_diff > threshold:
+        image_similarity = np.array(prev_frame[h_min:h_max,w_min:w_max,:] == frame[h_min:h_max,w_min:w_max,:]).astype(int).sum()/max_diff
+        # 一致度が閾値より下かどうかを確認
+        if image_similarity < threshold:
             # 画像を保存
             
             
